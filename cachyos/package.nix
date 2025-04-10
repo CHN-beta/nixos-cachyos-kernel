@@ -4,11 +4,11 @@
   stdenvNoCC,
   buildLinux,
   ...
-}:
+}@args:
 let
   sources = callPackage ./sources.nix { };
 in
-buildLinux {
+buildLinux (args // {
   pname = "linux-cachyos-lts";
   src = sources.linux;
   version = sources.linuxVersion;
@@ -35,7 +35,7 @@ buildLinux {
     CC_OPTIMIZE_FOR_PERFORMANCE_O3 = yes;
   };
 
-  kernelPatches = [
+  kernelPatches = args.kernelPatches or [] ++ [
     {
       name = "cachyos-base-all";
       patch = sources.cachyos-base-all;
@@ -48,4 +48,4 @@ buildLinux {
   ];
 
   meta.broken = ! stdenvNoCC.hostPlatform.isx86_64;
-}
+})
